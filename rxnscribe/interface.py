@@ -17,7 +17,7 @@ from molscribe import MolScribe
 from huggingface_hub import hf_hub_download
 #import easyocr
 
-'''
+
 class RxnScribe:
 
     def __init__(self, model_path, device=None):
@@ -164,7 +164,7 @@ class RxnScribe:
         result_image = np.asarray(buf)
         plt.close(fig)
         return result_image
-'''
+
 class MolDetect:
 
     def __init__(self, model_path, device = None, coref = False):
