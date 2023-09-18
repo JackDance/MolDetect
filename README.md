@@ -100,20 +100,21 @@ pip install -r requirements.txt
 Download the reaction diagrams from this [link](https://huggingface.co/yujieq/RxnScribe/blob/main/images.zip), 
 and save them to `data/detect/images/`.
 
-The ground truth files can be found at [`data/parse/splits/`](data/parse/splits/).
+The ground truth files can be found at [`data/detect/splits/annotations/`](data/detect/splits/annotations) and [`data/coref/splits/annotations/`](data/coref/splits/annotations).
 
-We perform five-fold cross validation in our experiments. The train/dev/test split for each fold is available.
+We use a 70-10-20 split in our experiments. The full train/dev/test split is available in the above directories.
 
 This [notebook](notebook/visualize_data.ipynb) shows how to visualize the diagram and the ground truth.
 
-## Train and Evaluate RxnScribe
-Run this script to train and evaluate RxnScribe with five-fold cross validation.
+## Train and Evaluate MolDetect and MolCoref
+Run this script to train and evaluate MolDetect on our train test split.
 ```bash
-bash scripts/train_pix2seq_cv.sh
+bash scripts/train_detect.sh
 ```
-Finally, we train RxnScribe with 90% of the dataset, and use the remaining 10% as the dev set. 
-We release this [model checkpoint](https://huggingface.co/yujieq/RxnScribe/blob/main/pix2seq_reaction_full.ckpt) 
-as it is trained on more data.
+
+Run this script to train and evaluate MolCoref on our train test split.
 ```bash
-bash scripts/train_pix2seq_full.sh
+bash scripts/train_coref.sh
 ```
+
+
