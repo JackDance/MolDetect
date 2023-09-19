@@ -66,6 +66,7 @@ class RxnScribe:
         args.pix2seq = True
         args.pix2seq_ckpt = None
         args.pred_eos = True
+        args.is_coco = False
         return args
 
     def get_model(self, args, tokenizer, device, model_states):
@@ -212,6 +213,7 @@ class MolDetect:
         args.pix2seq = True
         args.pix2seq_ckpt = None
         args.pred_eos = True
+        args.is_coco = False
         return args
     
     def get_model(self, args, tokenizer, device, model_states):
