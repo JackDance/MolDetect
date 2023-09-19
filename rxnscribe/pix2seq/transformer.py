@@ -364,11 +364,6 @@ def build_transformer(args, tokenizer):
         model.encoder.embeddings.word_embeddings = None
         model.encoder.pooler = None
         return model
-    elif args.linear_head:
-        return nn.Sequential(
-            nn.Linear(42*42*256, 2094),
-            nn.Softmax()
-        )
     else:
         num_vocal = len(tokenizer)
         return Transformer(
