@@ -15,7 +15,7 @@ from .data import postprocess_reactions, postprocess_bboxes, ReactionImageData, 
 
 from molscribe import MolScribe
 from huggingface_hub import hf_hub_download
-#import easyocr
+import easyocr
 
 
 class RxnScribe:
