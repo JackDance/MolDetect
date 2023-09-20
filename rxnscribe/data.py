@@ -363,12 +363,12 @@ class CorefImageData(ImageData):
                 xmin, ymin, xmax, ymax = b.unnormalize() #* np.array([w, h, w, h])
                 #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
                 #ax.text(xmin - 50, ymin+ 60, i, fontsize=20, bbox=dict(facecolor=colours[colorcounter], alpha=0.5))
-                b.draw(ax, color = 'deepskyblue') 
+                b.draw(ax, color = colours[colorcounter%len(colours)]) 
             elif b.category_id == 3:
                 xmin, ymin, xmax, ymax = b.unnormalize() #* np.array([w, h, w, h])
                 #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
                 #ax.text(xmin - 50, ymin+ 60, i, fontsize=20, bbox=dict(facecolor=colours[colorcounter], alpha=0.5)) 
-                b.draw(ax, color = 'limegreen') 
+                b.draw(ax, color = colours[colorcounter%len(colours)]) 
 
 
 
