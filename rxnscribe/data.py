@@ -523,7 +523,7 @@ def postprocess_coref_results(bboxes, image, molscribe = None, ocr = None, batch
                 text = ocr.readtext(bbox.image(), detail = 0)
                 bbox.set_text(text)
     
-    return {'bboxes': [bbox.to_json for bbox in bbox_objects], 'coref': bboxes['coref']}
+    return {'bboxes': [bbox.to_json for bbox in bbox_objects], 'corefs': bboxes['corefs']}
         
 
 
