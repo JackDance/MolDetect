@@ -480,7 +480,8 @@ def postprocess_reactions(reactions, image_file=None, image=None, molscribe=None
     return pred_reactions.to_json()
 
 def postprocess_bboxes(bboxes, image = None, molscribe = None, batch_size = 32):
-    bbox_objects = [BBox(bbox = bbox, image_data = None, xyxy = True, normalized = True) for bbox in bboxes]
+    image_d = ImageData(image = image)
+    bbox_objects = [BBox(bbox = bbox, image_data = image_d, xyxy = True, normalized = True) for bbox in bboxes]
     bbox_objects_no_empty = [bbox for bbox in bbox_objects if not bbox.is_empty]
     #deduplicate
     deduplicated = deduplicate_bboxes(bbox_objects_no_empty)
@@ -502,7 +503,8 @@ def postprocess_bboxes(bboxes, image = None, molscribe = None, batch_size = 32):
     return [bbox.to_json() for bbox in deduplicated]
 
 def postprocess_coref_results(bboxes, image, molscribe = None, ocr = None, batch_size = 32):
-    bbox_objects = [BBox(bbox = bbox, image_data = None, xyxy = True, normalized = True) for bbox in bboxes['bboxes']]
+    image_d = ImageData(image = image)
+    bbox_objects = [BBox(bbox = bbox, image_data = image_d, xyxy = True, normalized = True) for bbox in bboxes['bboxes']]
     if molscribe:
         
         bbox_images, bbox_indices = [], []
