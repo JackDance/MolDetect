@@ -34,6 +34,10 @@ class BBox(object):
         return self.category_id == 1
 
     @property
+    def is_idt(self):
+        return self.category_id == 3
+
+    @property
     def is_empty(self):
         return abs(self.x2 - self.x1) <= 0.01 or abs(self.y2 - self.y1) <= 0.01
 
@@ -475,12 +479,54 @@ def postprocess_reactions(reactions, image_file=None, image=None, molscribe=None
                     bbox.set_text(text)
     return pred_reactions.to_json()
 
-def postprocess_bboxes(bboxes):
+def postprocess_bboxes(bboxes, image = None, molscribe = None, batch_size = 32):
     bbox_objects = [BBox(bbox = bbox, image_data = None, xyxy = True, normalized = True) for bbox in bboxes]
     bbox_objects_no_empty = [bbox for bbox in bbox_objects if not bbox.is_empty]
     #deduplicate
     deduplicated = deduplicate_bboxes(bbox_objects_no_empty)
+
+    if molscribe:
+        bbox_images, bbox_indices = [], []
+
+        for i, bbox in enumerate(deduplicated):
+            if bbox.is_mol:
+                bbox_images.append(bbox.image())
+                bbox_indices.append(i)
+        
+        if len(bbox_images) > 0:
+            predictions = molscribe.predict_images(bbox_images, batch_size = batch_size)
+
+            for i, pred in zip(bbox_indices, predictions):
+                deduplicated[i].set_smiles(pred['smiles'], pred['molfile'])
+
     return [bbox.to_json() for bbox in deduplicated]
+
+def postprocess_coref_results(bboxes, image, molscribe = None, ocr = None, batch_size = 32):
+    bbox_objects = [BBox(bbox = bbox, image_data = None, xyxy = True, normalized = True) for bbox in bboxes['bboxes']]
+    if molscribe:
+        
+        bbox_images, bbox_indices = [], []
+
+        for i, bbox in enumerate(bbox_objects):
+            if bbox.is_mol:
+                bbox_images.append(bbox.image())
+                bbox_indices.append(i)
+        
+        if len(bbox_images) > 0:
+            predictions = molscribe.predict_images(bbox_images, batch_size = batch_size)
+
+            for i, pred in zip(bbox_indices, predictions):
+                bbox_objects[i].set_smiles(pred['smiles'], pred['molfile'])
+    if ocr: 
+        for bbox in bbox_objects:
+            if bbox.is_idt:
+                text = ocr.readtext(bbox.image(), detail = 0)
+                bbox.set_text(text)
+    
+    return {'bboxes': [bbox.to_json for bbox in bbox_objects], 'coref': bboxes['coref']}
+        
+
+
 
 
     

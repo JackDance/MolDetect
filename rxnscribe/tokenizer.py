@@ -598,7 +598,7 @@ class CorefTokenizer(ReactionTokenizer):
         sequence_out.append(self.EOS_ID)
         return sequence, sequence_out
     
-    def sequence_to_data(self, sequence, scores=None, scale=None, ocr = None):
+    def sequence_to_data(self, sequence, scores=None, scale=None):
         bboxes = []
         i = 0
         if len(sequence) > 0 and sequence[0] == self.SOS_ID:
@@ -614,19 +614,16 @@ class CorefTokenizer(ReactionTokenizer):
                     bboxes.append(bbox)
                     i += 4
             i += 1
-        return {'bboxes': bboxes, 'corefs': self.bbox_to_coref(bboxes, ocr)}
+        return {'bboxes': bboxes, 'corefs': self.bbox_to_coref(bboxes)}
     
-    def bbox_to_coref(self, bboxes, ocr = None):
+    def bbox_to_coref(self, bboxes):
         corefs = []
 
         for i in range(len(bboxes) - 1):
             if bboxes[i]['category_id'] == 1 or bboxes[i]['category_id'] == 2:
                 j = i + 1
                 while j < len(bboxes) and bboxes[j]['category_id'] == 3:
-                    text = ""
-                    if ocr:
-                        text = ocr.readtext(bboxes[j].image(), detail = 0)
-                    corefs.append(([i, j], text))
+                    corefs.append([i, j])
                     j += 1
 
         return corefs 

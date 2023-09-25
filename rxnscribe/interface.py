@@ -229,12 +229,17 @@ class MolDetect:
         model.to(device)
         model.eval()
         return model
-    
+
+    def get_molscribe(self): 
+        ckpt_path = hf_hub_download("yujieq/MolScribe", "swin_base_char_aux_1m.pth")
+        molscribe = MolScribe(ckpt_path, device=self.device)
+        return molscribe
+
     def get_ocr_model(self):
         reader = easyocr.Reader(['en'], gpu = (self.device.type == 'cuda'))
         return reader
     
-    def predict_images(self, input_images: List, batch_size = 16, molscribe = None, coref = False, ocr = False):
+    def predict_images(self, input_images: List, batch_size = 16, molscribe = False, coref = False, ocr = False):
         device = self.device
         if not coref:
             tokenizer = self.tokenizer['bbox']
@@ -249,11 +254,11 @@ class MolDetect:
             with torch.no_grad():
                 pred_seqs, pred_scores = self.model(images, max_len=tokenizer.max_len)
             for i, (seqs, scores) in enumerate(zip(pred_seqs, pred_scores)):
+                bboxes = tokenizer.sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs[i]['scale'])
                 if coref: 
-                    bboxes = tokenizer.sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs[i]['scale'], ocr = self.ocr_model)
+                    bboxes = postprocess_coref_results(bboxes, image = input_images[i], molscribe = self.molscribe is molscribe else None, ocr = self.self.ocr_model if ocr else None)
                 if not coref:
-                    bboxes = tokenizer.sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs[i]['scale']) 
-                    bboxes = postprocess_bboxes(bboxes)
+                    bboxes = postprocess_bboxes(bboxes, image = input_images[i], molscribe = self.molscribe if molscribe else None)
                 predictions.append(bboxes)
         return predictions
 
