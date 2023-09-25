@@ -185,6 +185,7 @@ class MolDetect:
         self.tokenizer = get_tokenizer(args)
         self.model = self.get_model(args, self.tokenizer, self.device, states['state_dict'])
         self.transform = make_transforms('test', augment=False, debug=False)
+        self.ocr_model = self.get_ocr_model()
 
     def _get_args(self):
         parser = argparse.ArgumentParser()
@@ -218,6 +219,7 @@ class MolDetect:
         args.use_hf_transformer = False
         return args
     
+    
     def get_model(self, args, tokenizer, device, model_states):
         def remove_prefix(state_dict):
             return {k.replace('model.', ''): v for k, v in state_dict.items()}
@@ -228,7 +230,11 @@ class MolDetect:
         model.eval()
         return model
     
-    def predict_images(self, input_images: List, batch_size = 16, molscribe = None, coref = False):
+    def get_ocr_model(self):
+        reader = easyocr.Reader(['en'], gpu = (self.device.type == 'cuda'))
+        return reader
+    
+    def predict_images(self, input_images: List, batch_size = 16, molscribe = None, coref = False, ocr = False):
         device = self.device
         if not coref:
             tokenizer = self.tokenizer['bbox']
@@ -243,8 +249,11 @@ class MolDetect:
             with torch.no_grad():
                 pred_seqs, pred_scores = self.model(images, max_len=tokenizer.max_len)
             for i, (seqs, scores) in enumerate(zip(pred_seqs, pred_scores)):
-                bboxes = tokenizer.sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs[i]['scale'])
-                if not coref: bboxes = postprocess_bboxes(bboxes)
+                if coref: 
+                    bboxes = tokenizer.sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs[i]['scale'], ocr = self.ocr_model)
+                if not coref:
+                    bboxes = tokenizer.sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs[i]['scale']) 
+                    bboxes = postprocess_bboxes(bboxes)
                 predictions.append(bboxes)
         return predictions
 
