@@ -186,6 +186,7 @@ class MolDetect:
         self.model = self.get_model(args, self.tokenizer, self.device, states['state_dict'])
         self.transform = make_transforms('test', augment=False, debug=False)
         self.ocr_model = self.get_ocr_model()
+        self.molscribe = self.get_molscribe()
 
     def _get_args(self):
         parser = argparse.ArgumentParser()
@@ -262,20 +263,20 @@ class MolDetect:
                 predictions.append(bboxes)
         return predictions
 
-    def predict_image(self, image, coref = False):
-        predictions = self.predict_images([image], coref = coref)
+    def predict_image(self, image, molscribe = False, coref = False, ocr = False):
+        predictions = self.predict_images([image], molscribe = molscribe, coref = coref, ocr = ocr)
         return predictions[0]
 
-    def predict_image_files(self, image_files: List, batch_size = 16, coref = False):
+    def predict_image_files(self, image_files: List, batch_size = 16, molscribe = False, coref = False, ocr = False):
         input_images = []
         for path in image_files:
             image = PIL.Image.open(path).convert("RGB")
             input_images.append(image)
-        return self.predict_images(input_images, batch_size = batch_size, coref = coref)
+        return self.predict_images(input_images, batch_size = batch_size, molscribe = molscribe, coref = coref, ocr = ocr)
 
-    def predict_image_file(self, image_file: str, coref = False, **kwargs):
+    def predict_image_file(self, image_file: str, molscribe = False, coref = False, ocr = False, **kwargs):
         print(coref)
-        predictions = self.predict_image_files([image_file], coref = coref)
+        predictions = self.predict_image_files([image_file], molscribe = molscribe, coref = coref, ocr = ocr)
         return predictions[0]
     
     def draw_bboxes(self, predictions, image=None, image_file=None, coref = False):
