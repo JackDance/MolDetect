@@ -76,8 +76,8 @@ The predictions will be in the following format:
         #More bounding boxes
     ],
     'coref': [
-        [0, 1],
-        [3, 4],
+        ([0, 1], "4a"), #coreferences contain the indices of the molecule and identifier bounding boxes, as well as the string representation of the identifier
+        ([3, 4], "4b"),
         #More coref pairs
     ]
 }
