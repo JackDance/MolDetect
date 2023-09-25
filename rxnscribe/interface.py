@@ -11,7 +11,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from .pix2seq import build_pix2seq_model
 from .tokenizer import get_tokenizer
 from .dataset import make_transforms
-from .data import postprocess_reactions, postprocess_bboxes, ReactionImageData, ImageData, CorefImageData
+from .data import postprocess_reactions, postprocess_bboxes, postprocess_coref_results, ReactionImageData, ImageData, CorefImageData
 
 from molscribe import MolScribe
 from huggingface_hub import hf_hub_download
