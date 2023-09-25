@@ -257,7 +257,7 @@ class MolDetect:
             for i, (seqs, scores) in enumerate(zip(pred_seqs, pred_scores)):
                 bboxes = tokenizer.sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs[i]['scale'])
                 if coref: 
-                    bboxes = postprocess_coref_results(bboxes, image = input_images[i], molscribe = self.molscribe if molscribe else None, ocr = self.self.ocr_model if ocr else None)
+                    bboxes = postprocess_coref_results(bboxes, image = input_images[i], molscribe = self.molscribe if molscribe else None, ocr = self.ocr_model if ocr else None)
                 if not coref:
                     bboxes = postprocess_bboxes(bboxes, image = input_images[i], molscribe = self.molscribe if molscribe else None)
                 predictions.append(bboxes)
