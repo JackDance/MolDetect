@@ -177,7 +177,9 @@ class MolDetect:
         """
         args = self._get_args()
         if not coref: args.format = 'bbox'
-        else: args.format = 'coref'
+        else: 
+            args.format = 'coref'
+            args.use_hf_transformer = True
         states = torch.load(model_path, map_location = torch.device('cpu'))
         if device is None:
             device = torch.device('cpu')
