@@ -522,7 +522,7 @@ def postprocess_coref_results(bboxes, image, molscribe = None, ocr = None, batch
     if ocr: 
         for bbox in bbox_objects:
             if bbox.is_idt:
-                text = ocr.readtext(bbox.image(), detail = 0)
+                text = ocr.readtext(cv2.resize(bbox.image(), None, fx = 2, fy = 2), detail = 0)
                 bbox.set_text(text)
     
     return {'bboxes': [bbox.to_json() for bbox in bbox_objects], 'corefs': bboxes['corefs']}
