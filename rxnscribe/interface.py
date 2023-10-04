@@ -177,9 +177,7 @@ class MolDetect:
         """
         args = self._get_args()
         if not coref: args.format = 'bbox'
-        else: 
-            args.format = 'coref'
-            args.use_hf_transformer = True
+        else: args.format = 'coref'
         states = torch.load(model_path, map_location = torch.device('cpu'))
         if device is None:
             device = torch.device('cpu')
@@ -219,7 +217,7 @@ class MolDetect:
         args.pix2seq_ckpt = None
         args.pred_eos = True
         args.is_coco = False
-        args.use_hf_transformer = False
+        args.use_hf_transformer = True
         return args
     
     
@@ -247,7 +245,6 @@ class MolDetect:
         if not coref:
             tokenizer = self.tokenizer['bbox']
         else:
-            print(self.tokenizer.keys())
             tokenizer = self.tokenizer['coref']
         predictions = []
         for idx in range(0, len(input_images), batch_size):
@@ -277,7 +274,6 @@ class MolDetect:
         return self.predict_images(input_images, batch_size = batch_size, molscribe = molscribe, coref = coref, ocr = ocr)
 
     def predict_image_file(self, image_file: str, molscribe = False, coref = False, ocr = False, **kwargs):
-        print(coref)
         predictions = self.predict_image_files([image_file], molscribe = molscribe, coref = coref, ocr = ocr)
         return predictions[0]
     

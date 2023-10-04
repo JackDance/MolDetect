@@ -351,7 +351,6 @@ def _get_clones(module, N):
 def build_transformer(args, tokenizer):
     if args.use_hf_transformer:
         num_vocal = len(tokenizer)
-        print("num vocal "+str(num_vocal))
         encoder_config = BertConfig(max_position_embeddings = 1764, hidden_size = 256, num_attention_heads = 4, vocab_size = num_vocal, num_hidden_layers = 4, intermediate_size = 1024)
         decoder_config = BertConfig(max_position_embeddings = 1764, hidden_size = 256, num_attention_heads = 4, vocab_size = num_vocal, is_decoder = True, num_hidden_layers = 4, intermediate_size = 1024)
         config = EncoderDecoderConfig.from_encoder_decoder_configs(encoder_config, decoder_config, add_pooling_layer = False, decoder_add_pooling_layer = False)
