@@ -88,6 +88,8 @@ Similarly, we provide a function to visualize the predicted bboxes:
 ```python
 visualize_images = model.draw_bboxes(predictions, image_file = image_file, coref = True)
 ```
+Each predicted diagram will be visualized in a seperate image, where each molecule-coreference pair is depicted with the same color. 
+<img src="assets/output/output3.png" width = "384"/>
 
 For development or reproducing the experiments, follow the instructions below.
 ## Requirements
