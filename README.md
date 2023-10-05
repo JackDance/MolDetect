@@ -17,7 +17,7 @@ import torch
 from rxnscribe import MolDetect
 from huggingface_hub import hf_hub_download
 
-ckpt_path = hf_hub_download("Ozymandias314/MolDetectCkpt", "best.ckpt")
+ckpt_path = hf_hub_download("Ozymandias314/MolDetectCkpt", "best_hf.ckpt")
 model = MolDetect(ckpt_path, device=torch.device('cpu'))
 
 image_file = "assets/jacs.5b12989-Table-c3.png"
@@ -55,7 +55,7 @@ import torch
 from rxnscribe import MolDetect
 from huggingface_hub import hf_hub_download
 
-ckpt_path = hf_hub_download("Ozymandias314/MolDetectCkpt", "coref_best.ckpt")
+ckpt_path = hf_hub_download("Ozymandias314/MolDetectCkpt", "coref_best_hf.ckpt")
 model = MolDetect(ckpt_path, device=torch.device('cpu'), coref = True)
 
 image_file = "assets/jacs.5b12989-Table-c3.png"
