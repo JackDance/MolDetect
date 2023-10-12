@@ -228,8 +228,9 @@ class ImageData(object):
             self.width = data['width']
             self.height = data['height']
         if image_file:
-            image = Image.open(image_file)
-            self.image = np.array(image)  
+            self.image = cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB)
+            #image = Image.open(image_file)
+            #gitself.image = np.array(image)  
             self.height, self.width, _ = self.image.shape
         if image is not None:
             if not isinstance(image, np.ndarray):
