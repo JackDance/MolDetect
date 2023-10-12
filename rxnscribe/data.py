@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import matplotlib.colors as colors
 import matplotlib.patches as patches
+from PIL import Image
 
 
 class BBox(object):
@@ -227,7 +228,8 @@ class ImageData(object):
             self.width = data['width']
             self.height = data['height']
         if image_file:
-            self.image = cv2.imread(image_file)
+            image = Image.open(image_file)
+            self.image = np.array(image)  
             self.height, self.width, _ = self.image.shape
         if image is not None:
             if not isinstance(image, np.ndarray):
