@@ -358,7 +358,7 @@ class CorefImageData(ImageData):
         for b in self.gold_bboxes:
             b.draw(ax)
 
-    def draw_prediction(self, ax, image=None):
+    def draw_prediction(self, ax, image=None, two_color = False):
         if image is not None:
             ax.imshow(image)
         counter = 0
@@ -371,12 +371,14 @@ class CorefImageData(ImageData):
                 xmin, ymin, xmax, ymax = b.unnormalize() #* np.array([w, h, w, h])
                 #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
                 #ax.text(xmin - 50, ymin+ 60, i, fontsize=20, bbox=dict(facecolor=colours[colorcounter], alpha=0.5))
-                b.draw(ax, color = colours[colorcounter%len(colours)]) 
+                if two_color:b.draw(ax, color = '#6bc6f9')
+                else: b.draw(ax, color = colours[colorcounter%len(colours)]) 
             elif b.category_id == 3:
                 xmin, ymin, xmax, ymax = b.unnormalize() #* np.array([w, h, w, h])
                 #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
                 #ax.text(xmin - 50, ymin+ 60, i, fontsize=20, bbox=dict(facecolor=colours[colorcounter], alpha=0.5)) 
-                b.draw(ax, color = colours[colorcounter%len(colours)]) 
+                if two_color: b.draw(ax, color = '#7af969') 
+                else: b.draw(ax, color = colours[colorcounter%len(colours)]) 
 
 
 

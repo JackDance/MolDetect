@@ -288,7 +288,10 @@ class MolDetect:
         canvas = FigureCanvasAgg(fig)
         ax.imshow(data.image)
         ax.axis('off')
-        data.draw_prediction(ax, data.image)
+        if coref:
+            data.draw_prediction(ax, data.image, two_color = True)
+        else:
+            data.draw_prediction(ax, data.image)
         canvas.draw()
         buf = canvas.buffer_rgba()
         results.append(np.asarray(buf))
