@@ -477,7 +477,7 @@ def postprocess_reactions(reactions, image_file=None, image=None, molscribe=None
                     bbox_images.append(bbox.image())
                     bbox_indices.append((i, j))
         if len(bbox_images) > 0:
-            predictions = molscribe.predict_images(bbox_images, return_atoms_bonds = True, batch_size=batch_size)
+            predictions = molscribe.predict_images(bbox_images, return_atoms_bonds=True, batch_size=batch_size)
 
             for (i, j), pred in zip(bbox_indices, predictions):
                 pred_reactions[i].bboxes[j].set_smiles(pred['smiles'], pred['molfile'], pred['atoms'], pred['bonds'])
@@ -505,10 +505,10 @@ def postprocess_bboxes(bboxes, image = None, molscribe = None, batch_size = 32):
                 bbox_indices.append(i)
         
         if len(bbox_images) > 0:
-            predictions = molscribe.predict_images(bbox_images, batch_size = batch_size)
+            predictions = molscribe.predict_images(bbox_images, return_atoms_bonds=True, batch_size = batch_size)
 
             for i, pred in zip(bbox_indices, predictions):
-                deduplicated[i].set_smiles(pred['smiles'], pred['molfile'])
+                deduplicated[i].set_smiles(pred['smiles'], pred['molfile'], pred['atoms'], pred['bonds'])
 
     return [bbox.to_json() for bbox in deduplicated]
 
@@ -525,10 +525,10 @@ def postprocess_coref_results(bboxes, image, molscribe = None, ocr = None, batch
                 bbox_indices.append(i)
         
         if len(bbox_images) > 0:
-            predictions = molscribe.predict_images(bbox_images, batch_size = batch_size)
+            predictions = molscribe.predict_images(bbox_images, return_atoms_bonds=True, batch_size = batch_size)
 
             for i, pred in zip(bbox_indices, predictions):
-                bbox_objects[i].set_smiles(pred['smiles'], pred['molfile'])
+                bbox_objects[i].set_smiles(pred['smiles'], pred['molfile'], pred['atoms'], pred['bonds'])
     if ocr: 
         for bbox in bbox_objects:
             if bbox.is_idt:
