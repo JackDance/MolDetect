@@ -67,10 +67,14 @@ class BBox(object):
         ax.add_patch(rect)
         return
 
-    def set_smiles(self, smiles, molfile=None):
+    def set_smiles(self, smiles, molfile=None, atoms=None, bonds=None):
         self.data['smiles'] = smiles
         if molfile:
             self.data['molfile'] = molfile
+        if atoms:
+            self.data['atoms'] = atoms
+        if bonds:
+            self.data['bonds'] = bonds
 
     def set_text(self, text):
         self.data['text'] = text
@@ -473,10 +477,10 @@ def postprocess_reactions(reactions, image_file=None, image=None, molscribe=None
                     bbox_images.append(bbox.image())
                     bbox_indices.append((i, j))
         if len(bbox_images) > 0:
-            predictions = molscribe.predict_images(bbox_images, batch_size=batch_size)
+            predictions = molscribe.predict_images(bbox_images, return_atoms_bonds = True, batch_size=batch_size)
 
             for (i, j), pred in zip(bbox_indices, predictions):
-                pred_reactions[i].bboxes[j].set_smiles(pred['smiles'], pred['molfile'])
+                pred_reactions[i].bboxes[j].set_smiles(pred['smiles'], pred['molfile'], pred['atoms'], pred['bonds'])
     if ocr:
         for reaction in pred_reactions:
             for bbox in reaction.bboxes:
