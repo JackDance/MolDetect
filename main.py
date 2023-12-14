@@ -212,21 +212,10 @@ class ReactionExtractor(LightningModule):
                     precision, recall, f1 = results
                     self.print(f'Epoch: {epoch:>3}  Precision: {precision:.4f}  Recall: {recall:.4f}  F1: {f1:.4f}')
                     scores = [f1]
-                    '''
-                    self.print("now evaluating csr_prediction no proc")
-                    with open('./output/csr_predictions_no_proc_bbox.json') as f:
-                        pred1 = json.load(f)
-                    stats = coco_evaluator.evaluate(pred1['coref'])
-                    results = evaluator.evaluate_summarize(self.eval_dataset.data, pred1['coref'])
-                    precision, recall, f1 = results
-                    self.print(f'Epoch: {epoch:>3}  Precision: {precision:.4f}  Recall: {recall:.4f}  F1: {f1:.4f}')
-                    '''
                 else:
                     raise NotImplementedError
                 with open(os.path.join(self.trainer.default_root_dir, f'eval_{name}.json'), 'w') as f:
                     json.dump(results, f)
-                #if phase == 'test':
-                #    self.print(json.dumps(results, indent=4))
             with open(os.path.join(self.trainer.default_root_dir, f'prediction_{name}.json'), 'w') as f:
                 json.dump(predictions, f)
 
@@ -280,15 +269,6 @@ class ReactionExtractor(LightningModule):
                     precision, recall, f1 = results
                     self.print(f'Epoch: {epoch:>3}  Precision: {precision:.4f}  Recall: {recall:.4f}  F1: {f1:.4f}')
                     scores = [f1]
-                    '''
-                    self.print("now evaluating csr_prediction no proc")
-                    with open('./output/csr_predictions_no_proc_bbox.json') as f:
-                        pred1 = json.load(f)
-                    stats = coco_evaluator.evaluate(pred1['coref'])
-                    results = evaluator.evaluate_summarize(self.eval_dataset.data, pred1['coref'])
-                    precision, recall, f1 = results
-                    self.print(f'Epoch: {epoch:>3}  Precision: {precision:.4f}  Recall: {recall:.4f}  F1: {f1:.4f}')
-                    '''
                 else:
                     raise NotImplementedError
                 with open(os.path.join(self.trainer.default_root_dir, f'eval_{name}.json'), 'w') as f:
@@ -336,13 +316,10 @@ class ReactionExtractorPix2Seq(LightningModule):
         format = self.format
         if self.args.use_hf_transformer:
             logits, loss = self.model(images, refs[format])
-            #print(loss)
             return loss
         results = {format: (self.model(images, refs[format]), refs[format+'_out'][0][:, 1:])}
         losses = self.criterion(results, refs)
         loss = sum(losses.values())
-        
-        #print(loss)
         self.log('train/loss', loss)
         self.log('lr', self.lr_schedulers().get_lr()[0], prog_bar=True, logger=False)
         return loss
@@ -352,29 +329,19 @@ class ReactionExtractorPix2Seq(LightningModule):
         format = self.format
         batch_preds = {format: [], 'file_name': []}
         pred_seqs, pred_scores = self.model(images, max_len=self.tokenizer[format].max_len)#, cheat = refs)
-        #print(refs)
-        #print(pred_seqs)
-        #print(pred_seqs.shape)
-
-        #return pred_seqs
-
         for i, (seqs, scores) in enumerate(zip(pred_seqs, pred_scores)):
             if format == 'reaction':
                 reactions = self.tokenizer[format].sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs['scale'][i])
                 reactions = postprocess_reactions(reactions)
                 batch_preds[format].append(reactions)
-                #self.test_step_outputs[format].append(reactions)
             if format == 'bbox':
                 bboxes = self.tokenizer[format].sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs['scale'][i])
                 bboxes = postprocess_bboxes(bboxes)
                 batch_preds[format].append(bboxes)
-                #self.test_step_outputs[format].append(bboxes)
             if format == 'coref':
                 corefs = self.tokenizer[format].sequence_to_data(seqs.tolist(), scores.tolist(), scale = refs['scale'][i])['bboxes']
                 batch_preds[format].append(corefs)
-                #self.test_step_outputs[format].append(corefs)
             batch_preds['file_name'].append(refs['file_name'][i])
-            #self.test_step_outputs['file_name'].append(refs['file_name'][i])
         self.validation_step_outputs.append((indices, batch_preds))
         return indices, batch_preds
     
@@ -386,8 +353,6 @@ class ReactionExtractorPix2Seq(LightningModule):
             gathered_outputs = sum(gathered_outputs, [])
         else:
             gathered_outputs = self.validation_step_outputs
-        #self.validation_step_outputs[format].clear()
-        #self.validation_step_outputs['file_name'].clear()
         format = self.args.format
         predictions = utils.merge_predictions(gathered_outputs)
         name = self.eval_dataset.name
@@ -418,21 +383,10 @@ class ReactionExtractorPix2Seq(LightningModule):
                     precision, recall, f1 = results
                     self.print(f'Epoch: {epoch:>3}  Precision: {precision:.4f}  Recall: {recall:.4f}  F1: {f1:.4f}')
                     scores = [f1]
-                    '''
-                    self.print("now evaluating csr_prediction no proc")
-                    with open('./output/csr_predictions_no_proc_bbox.json') as f:
-                        pred1 = json.load(f)
-                    stats = coco_evaluator.evaluate(pred1['coref'])
-                    results = evaluator.evaluate_summarize(self.eval_dataset.data, pred1['coref'])
-                    precision, recall, f1 = results
-                    self.print(f'Epoch: {epoch:>3}  Precision: {precision:.4f}  Recall: {recall:.4f}  F1: {f1:.4f}')
-                    '''
                 else:
                     raise NotImplementedError
                 with open(os.path.join(self.trainer.default_root_dir, f'eval_{name}.json'), 'w') as f:
                     json.dump(results, f)
-                #if phase == 'test':
-                #    self.print(json.dumps(results, indent=4))
             with open(os.path.join(self.trainer.default_root_dir, f'prediction_{name}.json'), 'w') as f:
                 json.dump(predictions, f)
 
@@ -452,18 +406,14 @@ class ReactionExtractorPix2Seq(LightningModule):
                 reactions = self.tokenizer[format].sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs['scale'][i])
                 reactions = postprocess_reactions(reactions)
                 batch_preds[format].append(reactions)
-                #self.test_step_outputs[format].append(reactions)
             if format == 'bbox':
                 bboxes = self.tokenizer[format].sequence_to_data(seqs.tolist(), scores.tolist(), scale=refs['scale'][i])
                 bboxes = postprocess_bboxes(bboxes)
                 batch_preds[format].append(bboxes)
-                #self.test_step_outputs[format].append(bboxes)
             if format == 'coref':
                 corefs = self.tokenizer[format].sequence_to_data(seqs.tolist(), scores.tolist(), scale = refs['scale'][i])['bboxes']
                 batch_preds[format].append(corefs)
-                #self.test_step_outputs[format].append(corefs)
             batch_preds['file_name'].append(refs['file_name'][i])
-            #self.test_step_outputs['file_name'].append(refs['file_name'][i])
         self.test_step_outputs.append((indices, batch_preds))
         return indices, batch_preds
 
@@ -532,7 +482,6 @@ class ReactionExtractorPix2Seq(LightningModule):
         num_training_steps = self.trainer.num_training_steps
         self.print(f'Num training steps: {num_training_steps}')
         num_warmup_steps = int(num_training_steps * self.args.warmup_ratio)
-        # parameters = list(self.encoder.parameters()) + list(self.decoder.parameters())
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.args.lr, weight_decay=self.args.weight_decay)
         scheduler = get_scheduler(self.args.scheduler, optimizer, num_warmup_steps, num_training_steps)
         return {'optimizer': optimizer, 'lr_scheduler': {'scheduler': scheduler, 'interval': 'step'}}
@@ -592,9 +541,7 @@ class ModelCheckpoint(pl.callbacks.ModelCheckpoint):
 
 
 def main():
-    #torch.set_float32_matmul_precision('medium')
     args = get_args()
-
 
     pl.seed_everything(args.seed, workers=True)
 
@@ -603,22 +550,17 @@ def main():
 
     tokenizer = get_tokenizer(args)
 
-    
-
     MODEL = ReactionExtractorPix2Seq if args.pix2seq else ReactionExtractor
     if args.do_train:
         model = MODEL(args, tokenizer)
     else:
         model = MODEL.load_from_checkpoint(os.path.join(args.save_path, 'checkpoints/last.ckpt'), strict=False,
                                         args=args, tokenizer=tokenizer)
-    #print(model)
-    #compiled_model = torch.compile(model, backend = "eager")
     dm = ReactionDataModule(args, tokenizer)
     dm.prepare_data()
     dm.print_stats()
 
     checkpoint = ModelCheckpoint(monitor='val/score', mode='max', save_top_k=1, filename='best', save_last=True)
-    # checkpoint = ModelCheckpoint(monitor=None, save_top_k=0, save_last=True)
     lr_monitor = LearningRateMonitor(logging_interval='step')
     logger = pl.loggers.TensorBoardLogger(args.save_path, name='', version='')
 
@@ -647,33 +589,11 @@ def main():
 
     if args.do_valid:
         model.eval_dataset = dm.val_dataset
-
-        print("here")
-
-        #a=time.time()
-        #with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], with_stack = True, record_shapes=True) as prof:
-        #    with record_function("model_inference"):
         trainer.validate(model, datamodule=dm)
-        #print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
-        #prof.export_stacks("/tmp/profiler_stacks.txt", "self_cpu_time_total")
-        #print("exportd stacks")
-        #b=time.time()
-
-        #print(a-b)
 
     if args.do_test:
         model.eval_dataset = dm.test_dataset
         trainer.test(model, datamodule=dm)
-        '''
-        with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], with_stack = True, record_shapes=True) as prof:
-            with record_function("model_inference"):
-                trainer.test(model, datamodule=dm)
-        print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
         
-        prof.export_stacks("/tmp/profiler_stacks_cpu_A6000_16.txt", "self_cpu_time_total")
-        '''
-        
-
-
 if __name__ == "__main__":
     main()

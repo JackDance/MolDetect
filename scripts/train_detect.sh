@@ -7,7 +7,7 @@ BATCH_SIZE=32
 ACCUM_STEP=2
 
 PIX2SEQ_CKPT=./output/1e-4_300epoch_coco/checkpoints/best.ckpt
-SAVE_PATH=output/experiment_detect_filtered_hf_1e-4_200ep_both_augment
+SAVE_PATH=output/experiment_coref_1e-4_200ep
 
 set -x
 mkdir -p $SAVE_PATH

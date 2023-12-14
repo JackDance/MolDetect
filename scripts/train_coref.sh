@@ -1,21 +1,21 @@
 #!/bin/bash
 
 NUM_NODES=1
-NUM_GPUS_PER_NODE=4
+NUM_GPUS_PER_NODE=1
 
-BATCH_SIZE=32
+BATCH_SIZE=8
 ACCUM_STEP=2
 
 PIX2SEQ_CKPT=./output/1e-4_300epoch_coco/checkpoints/best.ckpt
-SAVE_PATH=output/experiment_coref_filtered_hf_1e-4_200ep_both_augment
+SAVE_PATH=output/experiment_coref_1e-4_200ep
 
 set -x
 mkdir -p $SAVE_PATH
 NCCL_P2P_DISABLE=1 python main.py \
-    --data_path data/detect/splits/annotations \
+    --data_path data/coref/splits/annotations \
     --image_path data/detect/images \
     --save_path $SAVE_PATH \
-    --train_file full_coref_train_filtered.json\
+    --train_file full_coref_train_filterd.json\
     --valid_file full_coref_val_filtered.json\
     --test_file full_coref_test_filtered.json\
     --format bbox \

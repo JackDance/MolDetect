@@ -232,10 +232,7 @@ class ImageData(object):
             self.width = data['width']
             self.height = data['height']
         if image_file:
-            #self.image = cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB)
             self.image = cv2.imread(image_file)
-            #image = Image.open(image_file)
-            #gitself.image = np.array(image)  
             self.height, self.width, _ = self.image.shape
         if image is not None:
             if not isinstance(image, np.ndarray):
@@ -330,9 +327,6 @@ class CorefImageData(ImageData):
                                 all_ids = False
                         if all_ids:
                             hits+=1
-
-            #print(matches)
-            #print(self.gold_corefs)
             return hits, len(self.gold_corefs), num_preds
         
         return 0, 0, 0
@@ -346,43 +340,32 @@ class CorefImageData(ImageData):
         for pair in self.gold_corefs:
             mol, idt = pair 
             if mol in counter_dict:
-                xmin, ymin, xmax, ymax = self.gold_bboxes[idt].unnormalize() #* np.array([w, h, w, h])
-                #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
+                xmin, ymin, xmax, ymax = self.gold_bboxes[idt].unnormalize()
                 ax.text(xmin - 50, ymin+ 60, str(counter_dict[mol]), fontsize=20, bbox=dict(facecolor='purple', alpha=0.5))
                 
             else:
                 counter+=1
                 counter_dict[mol] = counter
-                xmin, ymin, xmax, ymax = self.gold_bboxes[mol].unnormalize() #* np.array([w, h, w, h])
-                #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
+                xmin, ymin, xmax, ymax = self.gold_bboxes[mol].unnormalize() 
                 ax.text(xmin - 50, ymin+ 60, str(counter), fontsize=20, bbox=dict(facecolor='purple', alpha=0.5))
-                xmin, ymin, xmax, ymax = self.gold_bboxes[idt].unnormalize() #* np.array([w, h, w, h])
-                #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
+                xmin, ymin, xmax, ymax = self.gold_bboxes[idt].unnormalize() 
                 ax.text(xmin - 50, ymin+ 60, str(counter), fontsize=20, bbox=dict(facecolor='purple', alpha=0.5)) 
         for b in self.gold_bboxes:
             b.draw(ax)
 
-    def draw_prediction(self, ax, image=None, two_color = False):
+    def draw_prediction(self, ax, image=None):
         if image is not None:
             ax.imshow(image)
         counter = 0
         colours = ['#648fff', '#785ef0','#dc267f', '#fe6100','#ffb000','r', 'b', 'g', 'k', 'c', 'm', 'y', 'r', 'b', 'g', 'k', 'c', 'm', 'y', 'r', 'b', 'g', 'k', 'c', 'm', 'y']
         colorcounter = -1
         for i, b in enumerate(self.pred_bboxes):
-            if (b.category_id == 1 or b.category_id == 2): # and i < len(self.pred_bboxes) - 1 and self.pred_bboxes[i+1].category_id == 3:
+            if (b.category_id == 1 or b.category_id == 2):
                 counter += 1
                 colorcounter += 1
-                xmin, ymin, xmax, ymax = b.unnormalize() #* np.array([w, h, w, h])
-                #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
-                #ax.text(xmin - 50, ymin+ 60, i, fontsize=20, bbox=dict(facecolor=colours[colorcounter], alpha=0.5))
-                if two_color:b.draw(ax, color = '#6bc6f9')
-                else: b.draw(ax, color = colours[colorcounter%len(colours)]) 
+                b.draw(ax, color = colours[colorcounter%len(colours)]) 
             elif b.category_id == 3:
-                xmin, ymin, xmax, ymax = b.unnormalize() #* np.array([w, h, w, h])
-                #ax.add_patch(patches.Rectangle((xmin + 20, ymin + 20), xmax - xmin, ymax - ymin, fill=False, color='r', linewidth=1))
-                #ax.text(xmin - 50, ymin+ 60, i, fontsize=20, bbox=dict(facecolor=colours[colorcounter], alpha=0.5)) 
-                if two_color: b.draw(ax, color = '#7af969') 
-                else: b.draw(ax, color = colours[colorcounter%len(colours)]) 
+                b.draw(ax, color = colours[colorcounter%len(colours)]) 
 
 
 
