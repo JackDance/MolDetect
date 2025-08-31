@@ -4,3 +4,7 @@ scripts/*.sh
 output/**/*.json
 *.png
 .ipynb_checkpoints
+.idea
+
+# 忽略模型文件
+models/best_hf.ckptmodels/best_hf.ckpt
