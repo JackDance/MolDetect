@@ -1,5 +1,9 @@
-torch
-numpy>=1.19.5
+# 下载CPU版本的torch==2.5.1
+torch==2.5.1+cpu
+torchvision==0.20.1+cpu
+torchaudio==2.5.1+cpu
+
+numpy==1.26.4
 pandas>=1.2.4
 matplotlib>=3.5.3
 opencv-python>=4.5.5.64
