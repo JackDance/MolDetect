@@ -8,5 +8,3 @@ output/**/*.json
 
 # 忽略模型文件
 models/best_hf.ckpt
-
-models/best_hf.ckpt
