@@ -7,4 +7,5 @@ output/**/*.json
 .idea
 
 # 忽略模型文件
-models/best_hf.ckptmodels/best_hf.ckpt
+models/best_hf.ckpt
+
