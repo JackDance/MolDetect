@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  moldetect:
+    build: .
+    container_name: moldetect-api
+    ports:
+      - "13007:13007"
+    volumes:
+      # 挂载输出目录，方便查看生成的可视化图片
+      - ./assets/output:/app/assets/output
+      # 如果需要挂载模型文件，取消下面的注释
+      # - ./models:/app/models
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:13007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # 如果需要 GPU 支持，取消下面的注释
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]

@@ -1,0 +1,64 @@
+# Git 相关
+.git
+.gitignore
+
+# Python 相关
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# 开发环境
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 构建产物
+build/
+dist/
+*.egg-info/
+
+# 临时文件
+*.tmp
+*.temp
+temp/
+tmp/
+
+# 输出文件
+assets/output/*
+!assets/output/.gitkeep
+
+# 模型文件（如果太大可以排除，需要单独挂载）
+# models/*.ckpt
+
+# 文档
+README.md
+*.md
+
+# 测试文件
+test/
+tests/
+*_test.py
+test_*.py
