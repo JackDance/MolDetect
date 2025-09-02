@@ -42,7 +42,7 @@ docker build -t moldetect-api .
 # 2. 运行容器
 docker run -d \
   --name moldetect-api \
-  -p 13007:13007 \
+  -p 13111:13111 \
   -v $(pwd)/assets/output:/app/assets/output \
   moldetect-api
 ```
@@ -51,10 +51,10 @@ docker run -d \
 
 启动成功后，可以通过以下地址访问服务：
 
-- **API 文档**: http://localhost:13007/docs
-- **健康检查**: http://localhost:13007/health
-- **检测接口**: http://localhost:13007/detect
-- **可视化接口**: http://localhost:13007/visualize
+- **API 文档**: http://localhost:13111/docs
+- **健康检查**: http://localhost:13111/health
+- **检测接口**: http://localhost:13111/detect
+- **可视化接口**: http://localhost:13111/visualize
 
 ## 目录结构
 
@@ -83,8 +83,8 @@ MolDetect/
 
 ### 端口配置
 
-- 容器内端口: 13007
-- 宿主机端口: 13007
+- 容器内端口: 13111
+- 宿主机端口: 13111
 - 可在 `docker-compose.yml` 中修改端口映射
 
 ### 镜像源配置
@@ -131,11 +131,11 @@ ls -la models/
 
 ### 2. 端口被占用
 
-如果端口 13007 被占用，可以修改 `docker-compose.yml` 中的端口映射：
+如果端口 13111 被占用，可以修改 `docker-compose.yml` 中的端口映射：
 
 ```yaml
 ports:
-  - "13008:13007"  # 将宿主机端口改为 13008
+  - "13008:13111"  # 将宿主机端口改为 13008
 ```
 
 ### 3. 构建失败

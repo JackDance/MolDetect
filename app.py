@@ -15,6 +15,8 @@ from matplotlib.patches import Rectangle
 from pathlib import Path
 from typing import Dict, List, Optional
 import tempfile
+import asyncio
+import urllib.parse
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
@@ -209,7 +211,7 @@ async def visualize_detections(
 def visualize_detections_internal(image_path: str, predictions: Dict, output_path: str):
     """
     内部可视化函数（基于visualize_detections.py的实现）
-    
+
     Args:
         image_path: 输入图片路径
         predictions: 预测结果字典
@@ -329,13 +331,13 @@ def visualize_detections_internal(image_path: str, predictions: Dict, output_pat
 @app.get("/visualize/{filename}", summary="获取可视化图片")
 async def get_visualization_image(filename: str):
     """
-    获取可视化结果图片
+    获取可视化结果图片（下载后自动删除）
     
     Args:
         filename: 图片文件名
         
     Returns:
-        FileResponse: 图片文件
+        FileResponse: 可下载的图片文件
     """
     output_dir = Path("assets/output")
     image_path = output_dir / filename
@@ -343,8 +345,48 @@ async def get_visualization_image(filename: str):
     if not image_path.exists():
         raise HTTPException(status_code=404, detail="图片文件不存在")
     
-    return FileResponse(image_path, media_type="image/png")
+    try:
+        # 处理文件名中的中文字符，使用URL编码
+        safe_filename = urllib.parse.quote(filename, safe='')
+        download_filename = f"mol_detection_{safe_filename}"
+        
+        # 返回文件响应，设置下载文件名
+        response = FileResponse(
+            image_path, 
+            media_type="image/png",
+            filename=download_filename,  # 设置下载时的文件名
+            headers={"Content-Disposition": f"attachment; filename*=UTF-8''{download_filename}"}
+        )
+        
+        # 在响应发送后删除文件
+        asyncio.create_task(delete_file_after_response(str(image_path)))
+        
+        return response
+        
+    except Exception as e:
+        log.error(f"获取可视化图片失败: {e}")
+        raise HTTPException(status_code=500, detail=f"获取图片失败: {str(e)}")
+
+async def delete_file_after_response(file_path: str):
+    """
+    在响应发送后删除文件
+    
+    Args:
+        file_path: 要删除的文件路径
+    """
+    try:
+        # 等待一小段时间确保响应已发送
+        await asyncio.sleep(1)
+        
+        if os.path.exists(file_path):
+            os.unlink(file_path)
+            log.info(f"已删除临时可视化文件: {file_path}")
+        else:
+            log.warning(f"文件不存在，无需删除: {file_path}")
+            
+    except Exception as e:
+        log.error(f"删除文件失败: {file_path}, 错误: {e}")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=13007)
+    uvicorn.run(app, host="0.0.0.0", port=13111)

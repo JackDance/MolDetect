@@ -41,10 +41,10 @@ sleep 10
 
 # 检查服务状态
 echo "检查服务状态..."
-if curl -f http://localhost:13007/health &> /dev/null; then
+if curl -f http://localhost:13111/health &> /dev/null; then
     echo "✅ 服务启动成功！"
-    echo "🌐 API 文档地址: http://localhost:13007/docs"
-    echo "🔍 健康检查: http://localhost:13007/health"
+    echo "🌐 API 文档地址: http://localhost:13111/docs"
+    echo "🔍 健康检查: http://localhost:13111/health"
     echo "📊 可视化输出目录: ./assets/output"
 else
     echo "❌ 服务启动失败，请检查日志:"
