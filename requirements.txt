@@ -36,3 +36,6 @@ Pillow>=8.0.0
 
 # JSON处理和数据验证
 pydantic>=1.8.0
+
+# 日志
+loguru==0.7.3

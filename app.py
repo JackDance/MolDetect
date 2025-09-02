@@ -4,6 +4,7 @@
 2. 化学结构式bbox可视化
 3. 健康检查
 """
+import os
 import torch
 import cv2
 import matplotlib
@@ -11,17 +12,23 @@ matplotlib.use('Agg')  # 使用非交互式后端
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.patches import Rectangle
-import base64
-import io
 from pathlib import Path
 from typing import Dict, List, Optional
 import tempfile
-import os
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from rxnscribe import MolDetect
+from logger import setup_logging, log
+
+
+# 配置日志
+setup_logging(
+    console_level="INFO",   # 控制台日志级别
+    file_level="DEBUG",     # 文件日志级别
+    log_file="logs/app.log" # 日志文件路径
+)
 
 # 初始化FastAPI应用
 app = FastAPI(
@@ -56,21 +63,21 @@ def load_model():
         
         # 自动检测设备
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        print(f"使用设备: {device}")
+        log.info(f"使用设备: {device}")
         
         model = MolDetect(ckpt_path, device=device, coref=True)
-        print("模型加载成功")
+        log.info("模型加载成功")
         return True
     except Exception as e:
-        print(f"模型加载失败: {e}")
+        log.error(f"模型加载失败: {e}")
         return False
 
 @app.on_event("startup")
 async def startup_event():
     """应用启动时加载模型"""
-    print("正在启动MolDetect API服务...")
+    log.info("正在启动MolDetect API服务...")
     if not load_model():
-        print("警告: 模型加载失败，某些功能可能不可用")
+        log.warning("警告: 模型加载失败，某些功能可能不可用")
 
 @app.get("/health", summary="健康检查")
 async def health_check():

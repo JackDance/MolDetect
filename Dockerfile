@@ -1,5 +1,4 @@
-# 使用官方 Python 3.9 镜像作为基础镜像
-FROM python:3.9-slim
+FROM chatdd-acr-registry-vpc.cn-beijing.cr.aliyuncs.com/pharmolix/python:3.11.5
 
 # 设置工作目录
 WORKDIR /app
